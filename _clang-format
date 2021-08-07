@@ -1,0 +1,13 @@
+﻿---
+SortIncludes: 'false'
+AlignAfterOpenBracket: Align
+AllowShortIfStatementsOnASingleLine: 'true'
+BreakBeforeBraces: Allman
+ColumnLimit: '290'
+IndentCaseLabels: 'true'
+UseTab: Never
+AlwaysBreakTemplateDeclarations: 'true'
+AllowShortFunctionsOnASingleLine: 'false'
+IndentPPDirectives: BeforeHash
+
+...
