@@ -1,8 +1,8 @@
 /**
  * C++ Savitzky Golay filter  - Version 0.0.1
  * by M. Leitz MLeitz@boptics.de
- *
- * T
+ * This Library is licensed under the MIT License
+ * https://github.com/vlovo/savgol
  */
 #pragma once
 
