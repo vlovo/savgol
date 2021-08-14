@@ -21,28 +21,32 @@ inline OutputIt savgol(InputIt src_first, InputIt src_last, OutputIt dest_first,
 
   auto begin = src_first;
 
+  const auto border_size = smoothOperator.windowSize() / 2;
+
   while (src_first != src_last)
   {
-
-    if (std::distance(begin, src_first) > (smoothOperator.windowSize() / 2 - 1) && std::distance(begin, src_first) < (std::distance(begin, src_last) - (smoothOperator.windowSize() / 2) - 1))
+    if (std::distance(src_first, src_last) <= border_size || std::distance(begin, src_first) < border_size)
     {
-      auto result = accumulate_window(windowBegin, windowEnd, smoothOperator);
-
-      result =  result/smoothOperator.norm();
-
-      *dest_first = result;
-
-      dest_first++;
-      src_first++;
-
-      ++windowBegin; // move window forward
-      ++windowEnd;   // move window  forward
+      *dest_first = *src_first;
     }
     else
     {
 
-      *dest_first++ = *src_first++;
+      auto result = accumulate_window(windowBegin, windowEnd, smoothOperator);
+
+      result = result / smoothOperator.norm();
+
+      *dest_first = result;
+
+      if (windowEnd != src_last)
+      {
+        ++windowBegin; // move window forward
+        ++windowEnd;   // move window  forward
+      }
     }
+
+    ++dest_first;
+    ++src_first;
   }
 
   return dest_first;
@@ -51,7 +55,7 @@ inline OutputIt savgol(InputIt src_first, InputIt src_last, OutputIt dest_first,
 template <typename InputIt, typename ConvOperator>
 inline double accumulate_window(InputIt first, InputIt last, ConvOperator op)
 {
-  double sum=0.0;
+  double sum = 0.0;
   std::size_t i = 0;
 
   for (; first != last; ++first)
@@ -108,7 +112,7 @@ public:
   };
   auto norm()
   {
-    return  (convolutionWeights.at(mWindowsize)[0]);
+    return (convolutionWeights.at(mWindowsize)[0]);
   };
 
   int windowSize()
@@ -130,12 +134,10 @@ private:
         {17, {323, -21, -6, 7, 18, 27, 34, 39, 42, 43, 42, 39, 34, 27, 18, 7, -6, -21}},                                   // Window size 17
         {19, {2261, -136, -51, 24, 89, 144, 189, 224, 249, 264, 269, 264, 249, 224, 189, 144, 89, 24, -51, -136}},         // Window size 19
         {21, {3059, -171, -76, 9, 84, 149, 204, 249, 284, 309, 324, 329, 324, 309, 284, 249, 204, 149, 84, 9, -76, -171}}, // Window size 21
-        {23, {8059, -42, -21, -2, 15, 30, 43, 54, 63, 70, 75, 78, 79, 78, 75, 70, 63, 54, 43, 30, 15, -2, -21, -42}},      // Window size 23
-        {25, {5175, -254, -138, -33, 62, 147, 222, 287, 322, 387, 422, 447, 462, 467, 462, 447, 422, 387, 322, 287, 222, 147, 62, -33, -138, -254}}}}
+        {23, {805, -42, -21, -2, 15, 30, 43, 54, 63, 70, 75, 78, 79, 78, 75, 70, 63, 54, 43, 30, 15, -2, -21, -42}},       // Window size 23
+        {25, {5175, -254, -138, -33, 62, 147, 222, 287, 343, 387, 422, 447, 462, 467, 462, 447, 422, 387, 343, 287, 222, 147, 62, -33, -138, -254}}}}
 
   };
-
-   
 };
 
 class SmoothQuarticQuintic
@@ -213,7 +215,7 @@ private:
         {17, {408, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7, -8}},
         {19, {570, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9}},
         {21, {770, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10}},
-        {23, {1012, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11}}, 
+        {23, {1012, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11}},
         {25, {1300, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12}}}}
 
   };

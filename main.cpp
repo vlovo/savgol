@@ -15,7 +15,7 @@ using namespace  filter;
   std::vector<float> r;
    
 
-  savgol(data.begin(), data.end(), std::back_inserter(r), SmoothQuadCubic(7));
+  savgol(data.begin(), data.end(), std::back_inserter(r), SmoothQuadCubic(5));
 
 
   std::vector<double> data2{1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2};
