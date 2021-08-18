@@ -16,16 +16,18 @@ template <typename InputIt, typename OutputIt, typename Convolution_t>
 inline OutputIt savgol(InputIt src_first, InputIt src_last, OutputIt dest_first, Convolution_t smoothOperator)
 {
 
+  if (src_first == src_last) return dest_first;
+
   auto windowBegin = src_first;
   auto windowEnd = src_first + smoothOperator.windowSize();
 
-  auto begin = src_first;
+  const auto data_begin = src_first;
 
   const auto border_size = smoothOperator.windowSize() / 2;
 
   while (src_first != src_last)
   {
-    if (std::distance(src_first, src_last) <= border_size || std::distance(begin, src_first) < border_size)
+    if (std::distance(src_first, src_last) <= border_size || std::distance(data_begin, src_first) < border_size)
     {
       *dest_first = *src_first;
     }
@@ -103,6 +105,7 @@ public:
   {
     if (convolutionWeights.count(windowSize) == 0)
     {
+      throw std::invalid_argument("window size not supported");
     }
   };
 
@@ -143,10 +146,13 @@ private:
 class SmoothQuarticQuintic
 {
 public:
-  SmoothQuarticQuintic(int windowSize)
-      : mWindowsize(windowSize){
-
-        };
+  SmoothQuarticQuintic(int windowSize) : mWindowsize(windowSize)
+  {
+    if (convolutionWeights.count(windowSize) == 0)
+    {
+      throw std::invalid_argument("window size not supported");
+    }
+  };
 
   double operator()(size_t index, double element)
   {
@@ -182,10 +188,13 @@ private:
 class DeriveQuadFirst
 {
 public:
-  DeriveQuadFirst(int windowSize)
-      : mWindowsize(windowSize){
-
-        };
+  DeriveQuadFirst(int windowSize) : mWindowsize(windowSize)
+  {
+    if (convolutionWeights.count(windowSize) == 0)
+    {
+      throw std::invalid_argument("window size not supported");
+    }
+  };
 
   double operator()(size_t index, double element)
   {
@@ -217,6 +226,96 @@ private:
         {21, {770, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10}},
         {23, {1012, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11}},
         {25, {1300, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12}}}}
+
+  };
+};
+
+class SmoothGaussian
+{
+public:
+  SmoothGaussian(int windowSize) : mWindowsize(windowSize)
+  {
+    if (convolutionWeights.count(windowSize) == 0)
+    {
+      throw std::invalid_argument("window size not supported");
+    }
+  };
+
+  double operator()(size_t index, double element)
+  {
+    return static_cast<double>(convolutionWeights.at(mWindowsize)[index + 1] * element);
+  };
+  double norm()
+  {
+    return static_cast<double>(convolutionWeights.at(mWindowsize)[0]);
+  };
+
+  int windowSize()
+  {
+    return mWindowsize;
+  }
+
+private:
+  int mWindowsize;
+
+  inline static constexpr auto convolutionWeights = c_map<int, std::array<double, 26>, 11>{
+
+      {{{5, {16, 1, 4, 6, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0}},
+        {7, {64, 1, 6, 15, 20, 15, 6, 1, 0, 0, 0, 0, 0, 0}},
+        {9, {256, 1, 8, 28, 56, 70, 56, 28, 8, 1, 0, 0, 0, 0}},
+        {11, {2048, 1, 10, 45, 120, 210, 252, 210, 120, 45, 10, 1, 0, 0, 0, 0}},
+        {13, {8192, 1, 12, 66, 220, 495, 792, 924, 792, 495, 220, 66, 12, 1, 0, 0}},
+        {15, {32768, 1, 14, 91, 364, 1001, 2002, 3003, 3432, 3003, 2002, 1001, 364, 91, 14, 1}},
+        {17, {131072, 1, 16, 120, 560, 1820, 4368, 8008, 11440, 12870, 11440, 8008, 4368, 1820, 560, 120, 16, 1}},
+        {19, {524288, 1, 18, 153, 816, 3060, 8568, 18564, 31824, 43758, 48620, 43758, 31824, 18564, 8568, 3060, 816, 153, 18, 1}},
+        {21, {2097152, 1, 20, 190, 1140, 4845, 15504, 38760, 77520, 125970, 167960, 184756, 167960, 125970, 77520, 38760, 15504, 4845, 1140, 190, 20, 1}},
+        {23, {8388608, 1, 22, 231, 1540, 7315, 26334, 74613, 170544, 319770, 497420, 646646, 705432, 646646, 497420, 319770, 170544, 74613, 26334, 7315, 1540, 231, 22, 1}},
+        {25, {33554432, 1, 24, 276, 2024, 10626, 42504, 134596, 346104, 735471, 1307504, 1961256, 2496144, 2704156, 2496144, 1961256, 1307504, 735471, 346104, 134596, 42504, 10626, 2024, 276, 24, 1}}}}
+
+  };
+};
+
+class SmoothAverage
+{
+public:
+  SmoothAverage(int windowSize) : mWindowsize(windowSize)
+  {
+    if (convolutionWeights.count(windowSize) == 0)
+    {
+      throw std::invalid_argument("window size not supported");
+    }
+  };
+
+  double operator()(size_t index, double element)
+  {
+    return static_cast<double>(convolutionWeights.at(mWindowsize)[index + 1] * element);
+  };
+  double norm()
+  {
+    return static_cast<double>(convolutionWeights.at(mWindowsize)[0]);
+  };
+
+  int windowSize()
+  {
+    return mWindowsize;
+  }
+
+private:
+  int mWindowsize;
+
+  inline static constexpr auto convolutionWeights = c_map<int, std::array<double, 26>, 11>{
+
+      {{{5, {5, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0}},
+        {7, {7, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0}},
+        {9, {9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0}},
+        {11, {11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0}},
+        {13, {13, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0}},
+        {15, {15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}},
+        {17, {17, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}},
+        {19, {19, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}},
+        {21, {21, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}},
+        {23, {23, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}},
+        {25, {25, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}}}}
 
   };
 };
