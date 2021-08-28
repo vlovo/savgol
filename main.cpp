@@ -1,29 +1,43 @@
 
- 
+
 #include "savgol.hpp"
 
 #include <vector>
-
-
+#include <iostream>
+#include <fstream>
+#include <string>
 int main(int argc, char **argv[])
 {
- 
-using namespace  filter;
 
-  std::vector<float> data{1.0, 2, 1, 2, 1.0, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2};
-  
-  std::vector<float> r;
-   
+  using namespace filter;
 
-  savgol(data.begin(), data.end(), std::back_inserter(r), SmoothQuadCubic(5));
+  std::ofstream file;
 
+  std::vector<float> data{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-  std::vector<double> data2{1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2};
-  
-  
-  std::vector<double> r2(data2);
-  savgol(data.begin(), data.end(), r2.begin(), DeriveQuadFirst(7));
+  std::vector<float> gauss;
+  std::vector<float> savgolOrder2;
+  std::vector<float> average;
 
-  
+  const int windowSize = 5;
+
+  savgol(data.begin(), data.end(), std::back_inserter(gauss), SmoothGaussian(windowSize));
+
+  savgol(data.begin(), data.end(), std::back_inserter(savgolOrder2), SmoothQuadCubic(windowSize));
+
+  savgol(data.begin(), data.end(), std::back_inserter(average), SmoothAverage(windowSize));
+
+  file.open("savgol_demo.dat");
+
+  int i = 0;
+  for (auto e : data)
+  {
+    file << e << " " << average[i] << " " << gauss[i] << " " << savgolOrder2[i] << "\n";
+
+    ++i;
+  }
+
+  file.close();
+
   return 0;
 }

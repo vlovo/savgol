@@ -7,18 +7,19 @@ C++ implementation of Savitzky Golay  Filter based on the original paper :
 in a constexpr map.   
 
 * there is no padding implemented so far. The data points at the bounds left unchanged.
-* 
+ 
 ## usage
 
 ```cpp
 #include <vector>
 #include "savgol.hpp"
 
-std::vector<double> data = {-0.2,0.4,0.7,1.2,-0.1,-0.2,-0.2,-0.2,-0.2,-0.2};
+std::vector<float> data{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
 
 std::vector<double> filtered_data;
 
-filter::savgol(data.begin(), data.end(), sd::back_inserter(filtered_data),filter::SmoothQuadCubic(7) );
+filter::savgol(data.begin(), data.end(), sd::back_inserter(filtered_data),filter::SmoothQuadCubic(5) );
 
 ```
 
@@ -45,8 +46,9 @@ filter::savgol(data.begin(), data.end(), sd::back_inserter(filtered_data),filter
 * as presentented in the original paper the window sizes are odd numbers, up to a size  of 25 
 
 
+### Demonstration
 
-![](filter_response.svg) 
+![](savgol_demo.svg) 
 
 [1] A. Savitzky, M. J. E. Golay: Smoothing and Differentiation of Data by Simplified Least Squares Procedures. In: Analytical Chemistry. Volume 36, No. 8, June 1964,  p. 1627–1639, [doi:10.1021/ac60214a047](doi:10.1021/ac60214a047).
 
