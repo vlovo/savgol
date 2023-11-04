@@ -1,3 +1,5 @@
+# main CMakeList.txt
+# (c) vlovo
 
 cmake_minimum_required(VERSION 3.15)
 
@@ -18,4 +20,5 @@ target_compile_features(savgol INTERFACE cxx_std_17)
 
 add_executable(main ${SRC} ${HDR})
 target_link_libraries(main savgol) 
-target_compile_features(main PRIVATE cxx_std_17)  
+target_compile_features(main PRIVATE cxx_std_17) 
+ 
