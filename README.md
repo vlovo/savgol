@@ -11,11 +11,11 @@ in a constexpr map.
 ## usage
 
 ```cpp
+
 #include <vector>
 #include "savgol.hpp"
 
 std::vector<float> data{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
 
 std::vector<double> filtered_data;
 
