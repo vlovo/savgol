@@ -1,5 +1,10 @@
 # main CMakeList.txt
-# (c) vlovo for savgol
+
+# * C++ Savitzky Golay filter  - Version 0.0.1
+# * by M. Leitz MLeitz@boptics.de
+# * This Library is licensed under the MIT License
+# * https://github.com/vlovo/savgol
+# */
 
 cmake_minimum_required(VERSION 3.15)
 
