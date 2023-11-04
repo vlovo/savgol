@@ -1,5 +1,5 @@
 # main CMakeList.txt
-# (c) vlovo
+# (c) vlovo for savgol
 
 cmake_minimum_required(VERSION 3.15)
 
