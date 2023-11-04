@@ -8,7 +8,7 @@
 
 #include <array>
 #include <algorithm>
-
+#include <stdexcept>
 namespace filter
 {
 
